@@ -1,11 +1,11 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include <stdio.h>
 #include<WinSock2.h>
-#include <winsock.h>
+#include <Windows.h>
 #include <sys/types.h>
 #include "hello.h"
 #define PORT 5555
 #define LOCAL_HOST "127.0.0.1"
-
 
 
 int open_socket_fail(SOCKET winSocket)
@@ -14,6 +14,19 @@ int open_socket_fail(SOCKET winSocket)
 }
 
 void main() {
+
+	#ifdef WIN32
+		// Initialize Winsock
+		int iResult;
+		WSADATA wsaData;
+		iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+		if (iResult != 0) {
+			return;
+		}
+	#endif
+	
+
+
 
 	SOCKET winSocket = 0;
 	int port = 0, client_lengh = 0, sentence_len = 0, bind_success;
@@ -24,23 +37,27 @@ void main() {
 
 	if (open_socket_fail(winSocket))
 	{
-		printf("Error in opening Socket");
+		printf(TEXT("open socket failed. Error: %d"), WSAGetLastError());
+		closesocket(winSocket);
+		return FALSE;
 	}
 	else {
-		printf("port open success");
+		printf("port open success\n");
 	}
 	
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = inet_addr(LOCAL_HOST);
 	server.sin_port = htons(PORT);
 	bind_success = bind(winSocket, (SOCKADDR*)&server, sizeof(server));
-	if (bind_success < 0)
+	if (bind_success == SOCKET_ERROR)
 	{
-		printf("Error in bind");
+		printf( TEXT("Binding socket failed. Error: %d"),WSAGetLastError());
+		closesocket(winSocket);
+		return FALSE;
 	}
 	else
 	{
-		printf("bind succeeded");
+		printf("bind succeeded\n");
 	}
 
 
