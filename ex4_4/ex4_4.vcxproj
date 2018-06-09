@@ -118,7 +118,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="hello.c" />
+    <ClCompile Include="ex3_lb.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hello.h" />
